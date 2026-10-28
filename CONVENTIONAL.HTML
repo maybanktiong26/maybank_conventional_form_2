@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Maybank Conventional · Unified Design with Validation</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js">
+    </script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js">
+    </script>
+    <style>
+        /* ----- GLOBAL UPPERCASE (website only) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+            min-height: 100vh;
+            padding: 32px 20px;
+            text-transform: uppercase;
+        }
+
+        .unified-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .modern-card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 188, 0, 0.2);
+        }
+
+        .card-header {
+            background: #1e2a3a;
+            padding: 20px 28px;
+            border-bottom: 3px solid #FFBC00;
+        }
+
+        .card-header h1 {
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header h1 small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #FFBC00;
+            background: rgba(255, 188, 0, 0.2);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .card-body {
+            padding: 28px 32px;
+        }
+
+        .form-section {
+            background: #ffffff;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px 8px 24px;
+            border-bottom: 2px solid #FFBC00;
+            margin-bottom: 20px;
+        }
+
+        .section-head .badge-icon {
+            background: #FFBC00;
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1e2a3a;
+        }
+
+        .section-head h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a2c3e;
+            margin: 0;
+            letter-spacing: -0.2px;
+        }
+
+        .section-content {
+            padding: 0 24px 24px 24px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-field {
+            margin-bottom: 18px;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #5b6e8c;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: #fff;
+            outline: none;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        input[type="email"],
+        #my_email_1 {
+            text-transform: uppercase;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #FFBC00;
+            box-shadow: 0 0 0 3px rgba(255, 188, 0, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-opt {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #334155;
+            text-transform: uppercase;
+        }
+
+        .btn-opt.active {
+            background: #FFBC00;
+            border-color: #e6a800;
+            color: #1e2a3a;
+            box-shadow: 0 2px 8px rgba(255, 188, 0, 0.3);
+        }
+
+        .btn-opt.error-highlight {
+            border: 2px solid #e53e3e;
+            background: #fff5f5;
+        }
+
+        .btn-opt.disabled-btn {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .card-hierarchy {
+            margin-top: 8px;
+        }
+
+        .card-main-item {
+            background: #f8fafc;
+            border: 1px solid #e2edf2;
+            border-radius: 60px;
+            padding: 10px 20px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card-main-item.active {
+            background: #FFBC20;
+            border-color: #FFBC00;
+        }
+
+        .card-main-item.error-highlight {
+            border: 2px solid #e53e3e;
+            background: #fff5f5;
+        }
+
+        .card-main-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .card-main-item span {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .sub-card-group {
+            margin-left: 40px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sub-card {
+            background: #fffef7;
+            border: 1px solid #ffe6b3;
+            border-left: 3px solid #FFBC00;
+            border-radius: 40px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .sub-card.active {
+            background: #FFBC00;
+        }
+        .sub-card.error-highlight {
+            border: 2px solid #e53e3e;
+            background: #fff5f5;
+        }
+        .sub-card input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .sub-card span {
+            font-size: 0.8rem;
+        }
+
+        .address-pair {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        .addr-box {
+            flex: 1;
+        }
+
+        .char-hint {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            color: #5b6e8c;
+        }
+        .char-hint.warning {
+            color: #e67e22;
+        }
+        .char-hint.error {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .flow-indicator {
+            background: #fef9e6;
+            border-left: 4px solid #FFBC00;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 12px 0;
+        }
+
+        .stats-badge {
+            background: #eef2ff;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .sig-canvas {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            background: #ffffff;
+            margin: 12px 0;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 150px;
+            display: block;
+            border-radius: 16px;
+            background: transparent;
+            cursor: crosshair;
+        }
+
+        .sig-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-clear {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #991b1b;
+            text-transform: uppercase;
+        }
+        .btn-clear:hover {
+            background: #fecaca;
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: #1e2a3a;
+            color: #FFBC00;
+            padding: 18px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 20px;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+            text-transform: uppercase;
+        }
+        .btn-primary:hover {
+            background: #0f1a24;
+            transform: translateY(-2px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-note {
+            background: #fefce8;
+            border-left: 4px solid #FFBC00;
+            padding: 14px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+            color: #2c3e50;
+        }
+
+        .font-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 28px;
+            margin-bottom: 20px;
+        }
+
+        .sig-instruction {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sig-instruction::before {
+            content: "✍️";
+            font-size: 0.9rem;
+        }
+
+        .sole-pro-indicator {
+            display: none;
+            background: #fef9e6;
+            border-left: 4px solid #FFBC00;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #7a6a2a;
+            margin-top: 6px;
+        }
+        .sole-pro-indicator.show {
+            display: block;
+        }
+
+        @media (max-width: 720px) {
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .address-pair {
+                flex-direction: column;
+            }
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        .validation-summary {
+            background: #fff5f5;
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e53e3e;
+            color: #c53030;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+        }
+        .validation-summary.show {
+            display: block;
+        }
+
+        .optional-badge {
+            font-size: 0.65rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        .required-star {
+            color: #e53e3e;
+            font-size: 0.7rem;
+            margin-left: 4px;
+        }
+
+        .income-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 16px;
+            padding: 12px 16px;
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+        .income-error.show {
+            display: block;
+        }
+
+        .nob-shrink {
+            font-size: 11px !important;
+        }
+
+        .postcode-error {
+            border-color: #e53e3e !important;
+            background: #fff5f5 !important;
+        }
+
+        .inline-flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .text-sm {
+            font-size: 0.75rem;
+            color: #5b6e8c;
+        }
+
+        .addr-box input {
+            text-transform: uppercase;
+        }
+
+        .transparent-badge {
+            display: inline-block;
+            background: #e6f7e6;
+            color: #1a7a1a;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* race 按钮行内样式 */
+        .race-input-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .race-input-row input {
+            flex: 1;
+            min-width: 140px;
+        }
+        .race-btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .race-btn-group .btn-opt {
+            padding: 6px 14px;
+            font-size: 0.7rem;
+        }
+
+        .phone-input {
+            text-transform: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="unified-wrapper">
+        <div class="modern-card">
+            <div class="card-header">
+                <h1>🏦 MAYBANK CONVENTIONAL <small>FORM VALIDATION · ALL REQUIRED FIELDS</small></h1>
+            </div>
+            <div class="card-body">
+
+                <div class="info-note">
+                    ✨ <strong>UNIFIED DESIGN + CONVENTIONAL LOGIC</strong> — FULL NAME SINGLE ENTRY AUTO-SYNCS · IC AUTO‑GENERATES DOB · POSTCODES DIGITS‑ONLY · CITY 'KL' OR 'KUALA LUMPUR' → STATE 'WP KL' · <strong>INCOME: GROSS &gt;= NET (2X RULE)</strong> · NAME‑ON‑CARD DERIVED FROM FULL NAME · <strong>SOLE PRO → AUTO SELF‑EMPLOYED + CLEARS EMPLOYMENT TERMS &amp; STATUS</strong> · <strong>WORD SPLITTING PREVENTED</strong> · <strong>REMARK_1 → REMARK_2 AUTO‑JUMP</strong> · <strong>ALL INPUTS UPPERCASE</strong> · <strong>EMAIL MUST CONTAIN @</strong> · <strong>POSTCODE STARTING WITH '5' → CITY AUTO 'KL'</strong>
+                    <br><br>
+                    🖊️ <strong>第6页 &amp; 第8页签名已改为透明画布</strong> — 顾客签名直接覆盖在PDF内容上，无白色方块背景。
+                    <span class="transparent-badge">✨ 透明签名</span>
+                    <br>
+                    📌 <strong>核心逻辑：</strong> IC / Passport 二选一 · 第1面与第4面显示 IC 优先（若 IC 为空则显示护照） · 第3面 IC 字段仅显示 IC（为空则留空） · 种族快捷按钮 · 手机号允许 + 和 - · KLANG→SELANGOR · ANAK自动过滤 · 3字段名字全显示
+                </div>
+
+                <div class="font-upload-row">
+                    <label style="font-weight:700;">🔤 UPLOAD TTF FONT (OPTIONAL – BOLD SIMULATION)</label>
+                    <input type="file" id="fontUpload" accept=".ttf,.otf" style="width:auto; padding:6px 12px;" />
+                    <div id="fontPreviewText" style="font-size:0.75rem; background:#eef2ff; padding:5px 12px; border-radius:40px;">⚡ SYSTEM: HELVETICA (STANDARD)</div>
+                </div>
+
+                <div id="validationSummary" class="validation-summary"></div>
+
+                <!-- ===== SECTION 1: BASIC INFO ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">1</div><h3>APPLICATION DETAILS</h3></div>
+                    <div class="section-content">
+                        <div class="grid-2">
+                            <div class="form-field full-width"><label>📄 UPLOAD PDF TEMPLATE <span class="required-star">*</span></label><input type="file" id="pdfUpload" accept=".pdf" /></div>
+                            <div class="form-field"><label>FULL NAME <span class="required-star">*</span> <span id="fullNameCounter" style="background:#f1f5f9; padding:2px 8px; border-radius:30px;">0/60</span></label><input type="text" id="my_full_name" maxlength="60" placeholder="NAME AS IN NRIC" /></div>
+                            <div class="form-field"><label>IC NUMBER <span class="text-sm">(YYMMDD-XX-XXXX → AUTO DOB)</span> <span class="optional-badge" id="icOptionalBadge">OPTIONAL IF PASSPORT</span></label><input type="text" id="my_ic" placeholder="E.G. 951023-13-6423" /></div>
+                            <div class="form-field"><label>PASSPORT NUMBER <span class="optional-badge">OPTIONAL</span></label><input type="text" id="my_passport_input" placeholder="PASSPORT NUMBER" /></div>
+                            <div class="form-field"><label>BOOTH / BRANCH CODE <span class="required-star">*</span></label><input type="text" id="my_location" /></div>
+                            <div class="form-field"><label>APPLICATION DATE <span class="required-star">*</span></label><input type="text" id="apply_date" placeholder="DD/MM/YYYY" /></div>
+                        </div>
+                        <div class="grid-3">
+                            <div><label>PAYSLIP/EA/BE <span class="required-star">*</span></label><div class="btn-group" data-group="payslip"><button class="btn-opt" data-val="payslip_ea_be_yes">YES</button><button class="btn-opt" data-val="payslip_ea_be_no">NO</button></div></div>
+                            <div><label>BANK STATEMENT <span class="required-star">*</span></label><div class="btn-group" data-group="bankstmt"><button class="btn-opt" data-val="bank_statement_yes">YES</button><button class="btn-opt" data-val="bank_statement_no">NO</button></div></div>
+                            <div><label>OTHERS DOC <span class="required-star">*</span></label><div class="btn-group" data-group="otherdoc"><button class="btn-opt" data-val="others_doc_yes">YES</button><button class="btn-opt" data-val="others_doc_no">NO</button></div></div>
+                        </div>
+                        <div class="form-field"><label>OTHER DOCUMENT NAME</label><input type="text" id="others_doc_name" /></div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 2: REMARKS (OPTIONAL) ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">2</div><h3>APPLICATION REMARKS <span class="optional-badge">OPTIONAL</span></h3></div>
+                    <div class="section-content">
+                        <div class="form-field">
+                            <label>REMARK LINE 1 <span class="text-sm">(MAX 40 CHARS · WORD BOUNDARY AWARE · AUTO-JUMPS TO LINE 2)</span></label>
+                            <input type="text" id="remarkInput1" placeholder="REMARK 1" />
+                            <div class="char-hint" id="remark1Hint">0/40</div>
+                        </div>
+                        <div class="form-field">
+                            <label>REMARK LINE 2 <span class="text-sm">(MAX 40 CHARS · AUTO-FILLED FROM LINE 1)</span></label>
+                            <input type="text" id="remarkInput2" maxlength="40" placeholder="REMARK 2" />
+                            <div class="char-hint" id="remark2Hint">0/40</div>
+                        </div>
+                        <div class="flow-indicator" id="remarkFlow">
+                            <span>📝 REMARK_1: <span id="remark1Preview">—</span></span><br />
+                            <span>📝 REMARK_2: <span id="remark2Preview">—</span></span>
+                        </div>
+                        <input type="hidden" id="remark_1" /><input type="hidden" id="remark_2" />
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 3: CARD HIERARCHY ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">3</div><h3>CARD TYPE SELECTION <span class="required-star">*</span></h3></div>
+                    <div class="section-content">
+                        <div id="cardHierarchyContainer" class="card-hierarchy"></div>
+                        <div id="cardsErrorMsg" class="char-hint" style="color:#e53e3e; margin-top:6px;"></div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 4: PERSONAL DETAILS ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">4</div><h3>PERSONAL PARTICULARS</h3></div>
+                    <div class="section-content">
+                        <div class="btn-group" data-group="title"><button class="btn-opt" data-val="title_mr">MR</button><button class="btn-opt" data-val="title_mdm">MDM</button><button class="btn-opt" data-val="title_miss">MISS</button><span class="required-star">*</span></div>
+                        <div class="grid-2">
+                            <div class="form-field"><label>NAME ON CARD (MAX 19) <span class="required-star">*</span> <span class="text-sm" id="nameOnCardHint">AUTO‑GENERATED</span></label><input type="text" id="my_name" maxlength="19" placeholder="AUTO‑GENERATED" /></div>
+                            <!-- RACE 快捷按钮 + 自由输入 -->
+                            <div class="form-field">
+                                <label>RACE <span class="required-star">*</span></label>
+                                <div class="race-input-row">
+                                    <div class="race-btn-group">
+                                        <button class="btn-opt race-btn" data-val="MELAYU">MELAYU</button>
+                                        <button class="btn-opt race-btn" data-val="CHINESE">CHINESE</button>
+                                        <button class="btn-opt race-btn" data-val="INDIA">INDIA</button>
+                                        <button class="btn-opt race-btn" data-val="IBAN">IBAN</button>
+                                        <button class="btn-opt race-btn" data-val="KADAZAN">KADAZAN</button>
+                                        <button class="btn-opt race-btn" data-val="OTHERS">OTHERS</button>
+                                    </div>
+                                    <input type="text" id="my_race" placeholder="SELECT OR TYPE RACE" />
+                                </div>
+                            </div>
+                            <div class="form-field"><label>DATE OF BIRTH <span class="required-star">*</span> <span class="text-sm">(AUTO FROM IC)</span></label><input type="text" id="my_birthday_1" placeholder="DD/MM/YYYY" /></div>
+                            <div class="form-field"><label>NATIONALITY <span class="required-star">*</span></label><div class="btn-group" data-group="nat"><button class="btn-opt" data-val="title_malaysian">MALAYSIAN</button><button class="btn-opt" data-val="title_non_malaysian">NON‑MALAYSIAN</button></div></div>
+                            <div class="form-field"><label>GENDER <span class="required-star">*</span></label><div class="btn-group" data-group="gen"><button class="btn-opt" data-val="title_male">MALE</button><button class="btn-opt" data-val="title_female">FEMALE</button></div></div>
+                            <div class="form-field"><label>MARITAL STATUS <span class="required-star">*</span></label><div class="btn-group" data-group="mar"><button class="btn-opt" data-val="title_single">SINGLE</button><button class="btn-opt" data-val="title_married">MARRIED</button></div></div>
+                        </div>
+
+                        <div class="form-field"><label>🏠 HOME ADDRESS <span class="required-star">*</span> (LINE 1: 50 · LINE 2: 50 · WORD BOUNDARY AWARE)</label>
+                            <div class="address-pair">
+                                <div class="addr-box">
+                                    <input type="text" id="homeAddressLine1" placeholder="LINE 1 (MAX 50)" />
+                                    <div class="char-hint" id="homeAddr1Hint">0/50</div>
+                                </div>
+                                <div class="addr-box">
+                                    <input type="text" id="homeAddressLine2" maxlength="50" placeholder="LINE 2 (MAX 50)" />
+                                    <div class="char-hint" id="homeAddr2Hint">0/50</div>
+                                </div>
+                            </div>
+                            <div class="flow-indicator"><span>📍 MY_ADDRESS_1: <span id="addr1Preview">—</span></span><br /><span>📍 MY_ADDRESS_2: <span id="addr2Preview">—</span></span></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>POSTCODE <span class="required-star">*</span> <span class="text-sm">(DIGITS ONLY · STARTS WITH '5' → CITY 'KL')</span></label><input type="text" id="my_poscode" placeholder="E.G. 50400" /></div>
+                            <div><label>CITY <span class="required-star">*</span> <span class="text-sm">'KL'/'KLANG' → STATE AUTO</span></label><input type="text" id="my_city" placeholder="CITY" /></div>
+                            <div><label>STATE <span class="required-star">*</span></label><input type="text" id="my_state" placeholder="AUTO‑FILLED" /></div>
+                            <div><label>MOBILE PHONE <span class="required-star">*</span> <span class="text-sm">(允许 + 和 -，禁止纯数字 1300 热线)</span></label><input type="text" id="my_phone_no" placeholder="E.G. +6012-3456789" class="phone-input" /></div>
+                            <div class="full-width"><label>EMAIL <span class="required-star">*</span> <span class="text-sm">(MUST CONTAIN @)</span></label><input type="text" id="my_email_1" maxlength="30" placeholder="EMAIL" /><div class="char-hint" id="emailHint">0/30</div></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>RESIDENTIAL TYPE <span class="required-star">*</span></label><div class="btn-group" data-group="res"><button class="btn-opt" data-val="residential_own">OWN</button><button class="btn-opt" data-val="residential_parent">PARENT</button><button class="btn-opt" data-val="residential_other">OTHER</button></div></div>
+                            <div><label>EDUCATION LEVEL <span class="required-star">*</span></label><div class="btn-group" data-group="edu"><button class="btn-opt" data-val="education_secondary">SECONDARY</button><button class="btn-opt" data-val="education_diploma">DIPLOMA</button><button class="btn-opt" data-val="education_degree">DEGREE</button><button class="btn-opt" data-val="education_master">MASTER</button><button class="btn-opt" data-val="education_profess">PROFESSIONAL</button></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 5: EMPLOYMENT ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">5</div><h3>EMPLOYMENT DETAILS</h3></div>
+                    <div class="section-content">
+                        <div class="form-field"><label>COMPANY CATEGORY <span class="required-star">*</span></label>
+                            <div class="btn-group" data-group="companyCat">
+                                <button class="btn-opt" data-val="sole_pro">SOLE PRO</button>
+                                <button class="btn-opt" data-val="sdn_bhd">SDN BHD</button>
+                                <button class="btn-opt" data-val="gov_work">GOV WORK</button>
+                                <button class="btn-opt" data-val="mnc_plc">MNC/PLC</button>
+                                <button class="btn-opt" data-val="other_work">OTHER</button>
+                            </div>
+                            <div id="soleProIndicator" class="sole-pro-indicator">⏺ SOLE PROPRIETOR: EMPLOYMENT TERMS &amp; STATUS ARE NOT APPLICABLE (AUTO‑CLEARED)</div>
+                        </div>
+
+                        <div class="form-field"><label>EMPLOYMENT STATUS <span class="required-star" id="empStatusStar">*</span></label>
+                            <div class="btn-group" data-group="empStatus">
+                                <button class="btn-opt" data-val="company_employed">EMPLOYED / PERMANENT</button>
+                            </div>
+                            <div id="empStatusNote" class="sole-pro-indicator" style="display:none;">⏺ NOT APPLICABLE FOR SOLE PROPRIETOR</div>
+                        </div>
+
+                        <div class="form-field"><label>EMPLOYMENT TYPE <span class="required-star">*</span></label>
+                            <div class="btn-group" data-group="empType">
+                                <button class="btn-opt" data-val="company_private_employed">PRIVATE EMPLOYED</button>
+                                <button class="btn-opt" data-val="company_self_employed">SELF‑EMPLOYED</button>
+                                <button class="btn-opt" data-val="company_gov_employed">GOV EMPLOYED</button>
+                            </div>
+                        </div>
+
+                        <div class="form-field"><label>EMPLOYMENT TERMS <span class="required-star" id="empTermsStar">*</span></label>
+                            <div class="btn-group" data-group="empTerms">
+                                <button class="btn-opt" data-val="company_contract">CONTRACT</button>
+                                <button class="btn-opt" data-val="company_permanent">PERMANENT</button>
+                            </div>
+                            <div id="empTermsNote" class="sole-pro-indicator" style="display:none;">⏺ NOT APPLICABLE FOR SOLE PROPRIETOR</div>
+                        </div>
+
+                        <div class="form-field"><label>COMPANY NAME <span class="required-star">*</span></label><input type="text" id="company_name" /></div>
+
+                        <div class="form-field"><label>🏢 COMPANY ADDRESS <span class="required-star">*</span> (LINE 1: 50 · LINE 2: 50 · WORD BOUNDARY AWARE)</label>
+                            <div class="address-pair">
+                                <div class="addr-box">
+                                    <input type="text" id="companyAddressLine1" placeholder="LINE 1 (MAX 50)" />
+                                    <div class="char-hint" id="compAddr1Hint">0/50</div>
+                                </div>
+                                <div class="addr-box">
+                                    <input type="text" id="companyAddressLine2" maxlength="50" placeholder="LINE 2 (MAX 50)" />
+                                    <div class="char-hint" id="compAddr2Hint">0/50</div>
+                                </div>
+                            </div>
+                            <div class="flow-indicator"><span>🏢 COMPANY_ADDRESS1: <span id="compAddr1Preview">—</span></span><br /><span>🏢 COMPANY_ADDRESS2: <span id="compAddr2Preview">—</span></span></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>POSTCODE <span class="required-star">*</span> <span class="text-sm">(DIGITS ONLY · STARTS WITH '5' → CITY 'KL')</span></label><input type="text" id="company_poscode" placeholder="E.G. 50400" /></div>
+                            <div><label>CITY <span class="required-star">*</span> <span class="text-sm">'KL'/'KLANG' → STATE AUTO</span></label><input type="text" id="company_city" placeholder="CITY" /></div>
+                            <div><label>STATE <span class="required-star">*</span></label><input type="text" id="company_state" placeholder="AUTO‑FILLED" /></div>
+                            <div><label>COMPANY PHONE <span class="required-star">*</span> <span class="text-sm">(允许 + 和 -，禁止纯数字 1300 热线)</span></label><input type="text" id="company_contact_no" placeholder="E.G. +603-12345678" class="phone-input" /></div>
+                            <div><label>NATURE OF BUSINESS <span class="required-star">*</span> <span class="text-sm">(&gt;12 CHARS → 12PX, &gt;18 CHARS → 9.5PX IN PDF)</span></label><input type="text" id="company_nob" placeholder="NATURE OF BUSINESS" /></div>
+                            <div><label>POSITION <span class="required-star">*</span></label><input type="text" id="company_position" placeholder="POSITION" /></div>
+                            <div><label>YEARS SERVED <span class="required-star">*</span></label><input type="text" id="company_year" placeholder="YEARS SERVED" /></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>CARD DELIVERY <span class="required-star">*</span></label><div class="btn-group" data-group="delivery"><button class="btn-opt" data-val="send_home">SEND HOME</button><button class="btn-opt" data-val="send_company">SEND COMPANY</button></div></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-field"><label>GROSS MONTHLY INCOME (RM) <span class="required-star">*</span></label><input type="text" id="income_gross" placeholder="E.G. 5000" /></div>
+                            <div class="form-field"><label>NET MONTHLY INCOME (RM) <span class="required-star">*</span></label><input type="text" id="income_nett" placeholder="E.G. 4000" /></div>
+                        </div>
+                        <div id="incomeError" class="income-error"></div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 6: FATCA/CRS (OPTIONAL) ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">6</div><h3>FATCA / CRS <span class="optional-badge">OPTIONAL</span></h3></div>
+                    <div class="section-content">
+                        <div class="grid-2">
+                            <div class="form-field full-width"><label>COUNTRY OF TAX RESIDENCE</label><input type="text" id="my_country" value="MALAYSIA" /></div>
+                            <div><label>COUNTRY TIN</label><input type="text" id="country_tin" /></div>
+                            <div><label>TIN NUMBER</label><input type="text" id="number_tin" /></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION 7: SIGNATURE (OPTIONAL) ===== -->
+                <div class="form-section">
+                    <div class="section-head"><div class="badge-icon">7</div><h3>SIGNATURE <span class="optional-badge">OPTIONAL</span> <span class="transparent-badge">透明画布 · PDF无白底</span></h3></div>
+                    <div class="section-content">
+                        <div class="sig-canvas">
+                            <canvas id="sigCanvas" width="600" height="150" style="width:100%; height:150px; border-radius:16px;"></canvas>
+                        </div>
+                        <div class="sig-actions">
+                            <button type="button" id="clearSigBtn" class="btn-clear">🗑️ CLEAR SIGNATURE</button>
+                        </div>
+                        <div class="sig-instruction">✍️ 在白色区域签名 — 导出PDF时背景自动透明（第6页 &amp; 第8页）</div>
+                    </div>
+                </div>
+
+                <div class="stats-badge" id="statsInfo">✓ SELECTED OPTIONS: 0</div>
+                <input type="hidden" id="my_address_1" /><input type="hidden" id="my_address_2" />
+                <input type="hidden" id="company_address1" /><input type="hidden" id="company_address2" />
+                <input type="hidden" id="my_id_1" /><input type="hidden" id="my_full_name_1" /><input type="hidden" id="my_full_name_2" />
+                <input type="hidden" id="my_passport_id_2" /><input type="hidden" id="my_passport" />
+                <button class="btn-primary" id="generateBtn">📄 GENERATE COMPLETE PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONVENTIONAL WITH FULL VALIDATION ====================
+        const activeSelections = new Set();
+        let customFontBytes = null;
+        let isCustomFontLoaded = false;
+
+        // ---- UTILITY: split at word boundary ----
+        function splitAtWordBoundary(text, maxLen) {
+            if (text.length <= maxLen) return { first: text, second: '' };
+            let idx = text.lastIndexOf(' ', maxLen);
+            if (idx === -1) {
+                return { first: text, second: '' };
+            }
+            let first = text.substring(0, idx).trim();
+            let second = text.substring(idx + 1).trim();
+            return { first, second };
+        }
+
+        // ---- ADDRESS SPLIT LOGIC (with auto-jump) ----
+        function setupAddressSplit(input1, input2, maxLen1, maxLen2, preview1, preview2, hidden1, hidden2, hint1, hint2) {
+            const updateHints = () => {
+                if (hint1) hint1.innerText = input1.value.length + '/' + maxLen1;
+                if (hint2) hint2.innerText = input2.value.length + '/' + maxLen2;
+                if (input1.value.length >= maxLen1 - 5) { if (hint1) hint1.classList.add('warning'); } else { if (hint1)
+                        hint1.classList.remove('warning'); }
+                if (input2.value.length >= maxLen2 - 5) { if (hint2) hint2.classList.add('warning'); } else { if (hint2)
+                        hint2.classList.remove('warning'); }
+            };
+
+            const updatePreviews = () => {
+                if (preview1) preview1.innerText = input1.value || '(EMPTY)';
+                if (preview2) preview2.innerText = input2.value || '(EMPTY)';
+                if (hidden1) hidden1.value = input1.value;
+                if (hidden2) hidden2.value = input2.value;
+            };
+
+            const splitAndUpdate = () => {
+                let val = input1.value;
+                if (val.length > maxLen1) {
+                    let result = splitAtWordBoundary(val, maxLen1);
+                    input1.value = result.first;
+                    let remainder = result.second;
+                    if (remainder.length > maxLen2) {
+                        input2.value = remainder.substring(0, maxLen2);
+                    } else {
+                        input2.value = remainder;
+                    }
+                    if (result.second.trim().length > 0) {
+                        input2.focus();
+                    }
+                }
+                if (input2.value.length > maxLen2) {
+                    input2.value = input2.value.substring(0, maxLen2);
+                }
+                updateHints();
+                updatePreviews();
+            };
+
+            input1.addEventListener('input', function() {
+                splitAndUpdate();
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+
+            input2.addEventListener('input', function() {
+                if (this.value.length > maxLen2) {
+                    this.value = this.value.substring(0, maxLen2);
+                }
+                updateHints();
+                updatePreviews();
+                if (hidden2) hidden2.value = this.value;
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+
+            updateHints();
+            updatePreviews();
+            if (hidden1) hidden1.value = input1.value;
+            if (hidden2) hidden2.value = input2.value;
+
+            return splitAndUpdate;
+        }
+
+        // ---- REMARK SPLIT LOGIC ----
+        function setupRemarkSplit(input1, input2, maxLen, preview1, preview2, hidden1, hidden2, hint1, hint2) {
+            const updateHints = () => {
+                if (hint1) hint1.innerText = input1.value.length + '/' + maxLen;
+                if (hint2) hint2.innerText = input2.value.length + '/' + maxLen;
+            };
+            const updatePreviews = () => {
+                if (preview1) preview1.innerText = input1.value || '(EMPTY)';
+                if (preview2) preview2.innerText = input2.value || '(EMPTY)';
+                if (hidden1) hidden1.value = input1.value;
+                if (hidden2) hidden2.value = input2.value;
+            };
+            const splitAndUpdate = () => {
+                let val = input1.value;
+                if (val.length > maxLen) {
+                    let result = splitAtWordBoundary(val, maxLen);
+                    input1.value = result.first;
+                    let remainder = result.second;
+                    if (remainder.length > maxLen) {
+                        input2.value = remainder.substring(0, maxLen);
+                    } else {
+                        input2.value = remainder;
+                    }
+                    if (result.second.trim().length > 0) {
+                        input2.focus();
+                    }
+                }
+                if (input2.value.length > maxLen) {
+                    input2.value = input2.value.substring(0, maxLen);
+                }
+                updateHints();
+                updatePreviews();
+            };
+            input1.addEventListener('input', function() {
+                splitAndUpdate();
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+            input2.addEventListener('input', function() {
+                if (this.value.length > maxLen) {
+                    this.value = this.value.substring(0, maxLen);
+                }
+                updateHints();
+                updatePreviews();
+                if (hidden2) hidden2.value = this.value;
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+            updateHints();
+            updatePreviews();
+            if (hidden1) hidden1.value = input1.value;
+            if (hidden2) hidden2.value = input2.value;
+            return splitAndUpdate;
+        }
+
+        // ---- INIT ALL SPLITTERS ----
+        function initAllSplitters() {
+            setupAddressSplit(
+                document.getElementById('homeAddressLine1'),
+                document.getElementById('homeAddressLine2'),
+                50, 50,
+                document.getElementById('addr1Preview'),
+                document.getElementById('addr2Preview'),
+                document.getElementById('my_address_1'),
+                document.getElementById('my_address_2'),
+                document.getElementById('homeAddr1Hint'),
+                document.getElementById('homeAddr2Hint')
+            );
+
+            setupAddressSplit(
+                document.getElementById('companyAddressLine1'),
+                document.getElementById('companyAddressLine2'),
+                50, 50,
+                document.getElementById('compAddr1Preview'),
+                document.getElementById('compAddr2Preview'),
+                document.getElementById('company_address1'),
+                document.getElementById('company_address2'),
+                document.getElementById('compAddr1Hint'),
+                document.getElementById('compAddr2Hint')
+            );
+
+            setupRemarkSplit(
+                document.getElementById('remarkInput1'),
+                document.getElementById('remarkInput2'),
+                40,
+                document.getElementById('remark1Preview'),
+                document.getElementById('remark2Preview'),
+                document.getElementById('remark_1'),
+                document.getElementById('remark_2'),
+                document.getElementById('remark1Hint'),
+                document.getElementById('remark2Hint')
+            );
+        }
+
+        // ============================================================
+        //  INCOME VALIDATION — GROSS >= NET + 2X RULE
+        // ============================================================
+        function validateIncome(gross, nett) {
+            if (gross === null || nett === null || isNaN(gross) || isNaN(nett)) {
+                return { valid: false, msg: 'PLEASE ENTER VALID NUMBERS FOR GROSS AND NET INCOME.' };
+            }
+            if (gross <= 0 || nett <= 0) {
+                return { valid: false, msg: 'INCOME VALUES MUST BE GREATER THAN 0.' };
+            }
+            if (gross < nett) {
+                return { valid: false, msg: '❌ GROSS INCOME CANNOT BE LESS THAN NET INCOME. PLEASE ADJUST.' };
+            }
+            const maxVal = Math.max(gross, nett);
+            const minVal = Math.min(gross, nett);
+            const ratio = maxVal / minVal;
+            if (ratio > 2) {
+                return {
+                    valid: false,
+                    msg: `❌ GROSS AND NET INCOME DIFFERENCE EXCEEDS 2X (${maxVal.toFixed(2)} / ${minVal.toFixed(2)} = ${ratio.toFixed(2)}). PLEASE ADJUST.`
+                };
+            }
+            return { valid: true };
+        }
+
+        function checkIncome() {
+            const grossEl = document.getElementById('income_gross');
+            const nettEl = document.getElementById('income_nett');
+            const errorEl = document.getElementById('incomeError');
+            const g = parseFloat(grossEl.value);
+            const n = parseFloat(nettEl.value);
+            if (!grossEl.value.trim() || !nettEl.value.trim()) {
+                errorEl.classList.remove('show');
+                return;
+            }
+            if (isNaN(g) || isNaN(n)) {
+                errorEl.textContent = '⚠️ PLEASE ENTER VALID NUMBERS FOR GROSS AND NET INCOME.';
+                errorEl.classList.add('show');
+                return;
+            }
+            const result = validateIncome(g, n);
+            if (!result.valid) {
+                errorEl.textContent = result.msg;
+                errorEl.classList.add('show');
+            } else {
+                errorEl.classList.remove('show');
+            }
+            document.getElementById('validationSummary').classList.remove('show');
+        }
+        document.getElementById('income_gross').addEventListener('input', checkIncome);
+        document.getElementById('income_nett').addEventListener('input', checkIncome);
+
+        // ---- GET SELECTED GROUP VALUE ----
+        function getSelectedGroupValue(groupName) {
+            const groupDiv = document.querySelector(`.btn-group[data-group="${groupName}"]`);
+            if (!groupDiv) return null;
+            const activeBtn = groupDiv.querySelector('.btn-opt.active');
+            return activeBtn ? (activeBtn.getAttribute('data-val') || activeBtn.innerText) : null;
+        }
+
+        function hasAnyCardSelected() {
+            const mainChecked = document.querySelectorAll('.card-main-item input:checked').length;
+            const subChecked = document.querySelectorAll('.sub-card input:checked').length;
+            return (mainChecked + subChecked) > 0;
+        }
+
+        // ---- 检测是否热线号码 (提取数字后检查是否以 1300 开头) ----
+        function isHotlineNumber(val) {
+            const digits = val.replace(/[^0-9]/g, '');
+            return digits.startsWith('1300');
+        }
+
+        // ---- 验证手机号格式（只允许数字、+、-） ----
+        function isValidPhone(val) {
+            return /^[0-9+\-]+$/.test(val);
+        }
+
+        // ---- VALIDATE ALL FIELDS ----
+        function validateAllFields() {
+            let missingFields = [];
+
+            const pdfFile = document.getElementById('pdfUpload').files[0];
+            if (!pdfFile) missingFields.push('PDF TEMPLATE');
+
+            // IC 和 Passport 至少有一个
+            const icVal = document.getElementById('my_ic').value.trim();
+            const passportVal = document.getElementById('my_passport_input').value.trim();
+            const idVal = document.getElementById('my_id_1').value.trim();
+            const hasIC = icVal.length > 0 || idVal.length > 0;
+            const hasPassport = passportVal.length > 0;
+            if (!hasIC && !hasPassport) {
+                missingFields.push('IC NUMBER OR PASSPORT NUMBER (AT LEAST ONE)');
+            }
+
+            const requiredTexts = [
+                { id: 'my_full_name', name: 'FULL NAME' },
+                { id: 'my_location', name: 'BOOTH / BRANCH CODE' },
+                { id: 'apply_date', name: 'APPLICATION DATE' },
+                { id: 'my_name', name: 'NAME ON CARD' },
+                { id: 'my_race', name: 'RACE' },
+                { id: 'my_birthday_1', name: 'DATE OF BIRTH' },
+                { id: 'my_poscode', name: 'POSTCODE' },
+                { id: 'my_city', name: 'CITY' },
+                { id: 'my_state', name: 'STATE' },
+                { id: 'my_phone_no', name: 'MOBILE PHONE' },
+                { id: 'my_email_1', name: 'EMAIL' },
+                { id: 'company_name', name: 'COMPANY NAME' },
+                { id: 'company_poscode', name: 'COMPANY POSTCODE' },
+                { id: 'company_city', name: 'COMPANY CITY' },
+                { id: 'company_state', name: 'COMPANY STATE' },
+                { id: 'company_contact_no', name: 'COMPANY PHONE' },
+                { id: 'company_nob', name: 'NATURE OF BUSINESS' },
+                { id: 'company_position', name: 'POSITION' },
+                { id: 'company_year', name: 'YEARS SERVED' },
+                { id: 'income_gross', name: 'GROSS INCOME' },
+                { id: 'income_nett', name: 'NET INCOME' },
+                { id: 'homeAddressLine1', name: 'HOME ADDRESS LINE 1' },
+                { id: 'companyAddressLine1', name: 'COMPANY ADDRESS LINE 1' }
+            ];
+            for (let req of requiredTexts) {
+                const el = document.getElementById(req.id);
+                if (!el || !el.value.trim()) missingFields.push(req.name);
+            }
+
+            // ---- Email format validation: must contain '@' ----
+            const emailVal = document.getElementById('my_email_1').value.trim();
+            if (emailVal && !emailVal.includes('@')) {
+                missingFields.push('EMAIL: MUST CONTAIN @ SYMBOL');
+            }
+
+            // ---- 手机号：只允许数字、+、-，且不能是热线 (1300) ----
+            const phoneVal = document.getElementById('my_phone_no').value.trim();
+            if (phoneVal) {
+                if (!isValidPhone(phoneVal)) {
+                    missingFields.push('MOBILE PHONE: ONLY DIGITS, + AND - ALLOWED');
+                } else if (isHotlineNumber(phoneVal)) {
+                    missingFields.push('MOBILE PHONE: HOTLINE NUMBERS (1300) NOT ALLOWED');
+                }
+            }
+            const compPhoneVal = document.getElementById('company_contact_no').value.trim();
+            if (compPhoneVal) {
+                if (!isValidPhone(compPhoneVal)) {
+                    missingFields.push('COMPANY PHONE: ONLY DIGITS, + AND - ALLOWED');
+                } else if (isHotlineNumber(compPhoneVal)) {
+                    missingFields.push('COMPANY PHONE: HOTLINE NUMBERS (1300) NOT ALLOWED');
+                }
+            }
+
+            const groups = ['payslip', 'bankstmt', 'otherdoc', 'title', 'nat', 'gen', 'mar', 'res', 'edu', 'companyCat',
+                'empType', 'delivery'
+            ];
+            for (let grp of groups) {
+                const selected = getSelectedGroupValue(grp);
+                if (!selected) missingFields.push(`SELECTION: ${grp.toUpperCase()}`);
+            }
+
+            const isSolePro = getSelectedGroupValue('companyCat') === 'sole_pro';
+            if (!isSolePro) {
+                const empStatusVal = getSelectedGroupValue('empStatus');
+                if (!empStatusVal) missingFields.push('SELECTION: EMPLOYMENT STATUS');
+                const empTermsVal = getSelectedGroupValue('empTerms');
+                if (!empTermsVal) missingFields.push('SELECTION: EMPLOYMENT TERMS');
+            }
+
+            if (!hasAnyCardSelected()) missingFields.push('CARD TYPE SELECTION (SELECT AT LEAST ONE CARD)');
+
+            const gross = parseFloat(document.getElementById('income_gross').value);
+            const nett = parseFloat(document.getElementById('income_nett').value);
+            if (!isNaN(gross) && !isNaN(nett)) {
+                const result = validateIncome(gross, nett);
+                if (!result.valid) {
+                    missingFields.push('INCOME: ' + result.msg);
+                }
+            } else {
+                if (document.getElementById('income_gross').value.trim() && document.getElementById('income_nett').value
+                    .trim()) {
+                    missingFields.push('INCOME: PLEASE ENTER VALID NUMBERS.');
+                }
+            }
+
+            return missingFields;
+        }
+
+        function highlightErrors(missingList) {
+            document.querySelectorAll('.error-highlight').forEach(el => el.classList.remove('error-highlight'));
+            document.getElementById('cardsErrorMsg').innerHTML = '';
+
+            const textIds = ['my_full_name', 'my_ic', 'my_location', 'apply_date', 'my_name', 'my_race', 'my_birthday_1',
+                'my_poscode', 'my_city', 'my_state', 'my_phone_no', 'my_email_1', 'company_name', 'company_poscode',
+                'company_city', 'company_state', 'company_contact_no', 'company_nob', 'company_position', 'company_year',
+                'income_gross', 'income_nett', 'homeAddressLine1', 'companyAddressLine1', 'my_passport_input'
+            ];
+            for (let id of textIds) {
+                const el = document.getElementById(id);
+                if (el && missingList.some(m => m.toLowerCase().includes(id.replace(/_/g, ' ')))) {
+                    el.classList.add('error-highlight');
+                }
+            }
+            if (missingList.some(m => m.includes('EMAIL'))) {
+                document.getElementById('my_email_1').classList.add('error-highlight');
+            }
+            if (missingList.some(m => m.includes('PDF TEMPLATE'))) {
+                document.getElementById('pdfUpload').classList.add('error-highlight');
+            }
+            if (missingList.some(m => m.includes('IC NUMBER') || m.includes('PASSPORT NUMBER'))) {
+                document.getElementById('my_ic').classList.add('error-highlight');
+                document.getElementById('my_passport_input').classList.add('error-highlight');
+            }
+            if (missingList.some(m => m.includes('MOBILE PHONE'))) {
+                document.getElementById('my_phone_no').classList.add('error-highlight');
+            }
+            if (missingList.some(m => m.includes('COMPANY PHONE'))) {
+                document.getElementById('company_contact_no').classList.add('error-highlight');
+            }
+
+            const groupNames = ['payslip', 'bankstmt', 'otherdoc', 'title', 'nat', 'gen', 'mar', 'res', 'edu', 'companyCat',
+                'empType', 'delivery', 'empStatus', 'empTerms'
+            ];
+            for (let grp of groupNames) {
+                if (missingList.some(m => m.includes(grp.toUpperCase()))) {
+                    const groupDiv = document.querySelector(`.btn-group[data-group="${grp}"]`);
+                    if (groupDiv) groupDiv.querySelectorAll('.btn-opt').forEach(btn => btn.classList.add('error-highlight'));
+                }
+            }
+
+            if (missingList.some(m => m.includes('CARD TYPE'))) {
+                document.querySelectorAll('.card-main-item').forEach(el => el.classList.add('error-highlight'));
+                document.querySelectorAll('.sub-card').forEach(el => el.classList.add('error-highlight'));
+                document.getElementById('cardsErrorMsg').innerHTML = '⚠️ PLEASE SELECT AT LEAST ONE CARD (MAIN OR SUB-CARD)';
+            }
+        }
+
+        function showValidationErrors(missing) {
+            const summaryDiv = document.getElementById('validationSummary');
+            if (missing.length === 0) {
+                summaryDiv.classList.remove('show');
+                summaryDiv.innerHTML = '';
+                return true;
+            }
+            const message =
+                `❌ PLEASE COMPLETE THE FOLLOWING MANDATORY FIELDS BEFORE GENERATING PDF:<br>• ${missing.join('<br>• ')}`;
+            summaryDiv.innerHTML = message;
+            summaryDiv.classList.add('show');
+            highlightErrors(missing);
+            summaryDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return false;
+        }
+
+        // ---- INIT TOGGLE GROUPS ----
+        function initToggleGroups() {
+            document.querySelectorAll('.btn-opt').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const group = btn.parentElement?.dataset?.group;
+                    if ((group === 'empTerms' || group === 'empStatus') && getSelectedGroupValue('companyCat') ===
+                        'sole_pro') {
+                        return;
+                    }
+                    if (group) {
+                        btn.parentElement.querySelectorAll('.btn-opt').forEach(b => {
+                            b.classList.remove('active');
+                            b.classList.remove('error-highlight');
+                            activeSelections.delete(b.getAttribute('data-val') || b.innerText);
+                        });
+                    }
+                    btn.classList.add('active');
+                    const val = btn.getAttribute('data-val') || btn.innerText;
+                    activeSelections.add(val);
+                    updateStats();
+                    document.getElementById('validationSummary').classList.remove('show');
+                    if (group === 'companyCat') {
+                        setTimeout(applySoleProRules, 10);
+                    }
+                };
+                if (btn.classList.contains('active')) activeSelections.add(btn.getAttribute('data-val') || btn.innerText);
+            });
+            updateStats();
+            setTimeout(applySoleProRules, 50);
+        }
+
+        function updateStats() {
+            document.getElementById('statsInfo').innerHTML = `✓ SELECTED OPTIONS: ${activeSelections.size}`;
+        }
+
+        // ---- SOLE PRO RULES + AUTO-DEFAULT company_employed & company_permanent ----
+        function applySoleProRules() {
+            const isSolePro = getSelectedGroupValue('companyCat') === 'sole_pro';
+            const indicator = document.getElementById('soleProIndicator');
+            const empStatusNote = document.getElementById('empStatusNote');
+            const empTermsNote = document.getElementById('empTermsNote');
+            const empStatusStar = document.getElementById('empStatusStar');
+            const empTermsStar = document.getElementById('empTermsStar');
+
+            const empStatusGroup = document.querySelector('.btn-group[data-group="empStatus"]');
+            const empTermsGroup = document.querySelector('.btn-group[data-group="empTerms"]');
+
+            if (isSolePro) {
+                indicator.classList.add('show');
+                empStatusNote.style.display = 'block';
+                empTermsNote.style.display = 'block';
+                if (empStatusStar) empStatusStar.style.display = 'none';
+                if (empTermsStar) empTermsStar.style.display = 'none';
+
+                if (empStatusGroup) {
+                    empStatusGroup.querySelectorAll('.btn-opt.active').forEach(btn => {
+                        btn.classList.remove('active');
+                        const v = btn.getAttribute('data-val') || btn.innerText;
+                        activeSelections.delete(v);
+                    });
+                }
+                if (empTermsGroup) {
+                    empTermsGroup.querySelectorAll('.btn-opt.active').forEach(btn => {
+                        btn.classList.remove('active');
+                        const v = btn.getAttribute('data-val') || btn.innerText;
+                        activeSelections.delete(v);
+                    });
+                }
+                document.querySelectorAll(
+                        '.btn-group[data-group="empTerms"] .btn-opt, .btn-group[data-group="empStatus"] .btn-opt')
+                    .forEach(btn => btn.classList.add('disabled-btn'));
+
+                const empTypeGroup = document.querySelector('.btn-group[data-group="empType"]');
+                if (empTypeGroup) {
+                    const selfBtn = empTypeGroup.querySelector('.btn-opt[data-val="company_self_employed"]');
+                    if (selfBtn && !selfBtn.classList.contains('active')) {
+                        selfBtn.classList.add('active');
+                        const val = selfBtn.getAttribute('data-val') || selfBtn.innerText;
+                        activeSelections.add(val);
+                        empTypeGroup.querySelectorAll('.btn-opt.active').forEach(b => {
+                            if (b !== selfBtn) {
+                                b.classList.remove('active');
+                                const v = b.getAttribute('data-val') || b.innerText;
+                                activeSelections.delete(v);
+                            }
+                        });
+                        updateStats();
+                    }
+                }
+
+                updateStats();
+
+            } else {
+                indicator.classList.remove('show');
+                empStatusNote.style.display = 'none';
+                empTermsNote.style.display = 'none';
+                if (empStatusStar) empStatusStar.style.display = 'inline';
+                if (empTermsStar) empTermsStar.style.display = 'inline';
+
+                document.querySelectorAll(
+                        '.btn-group[data-group="empTerms"] .btn-opt, .btn-group[data-group="empStatus"] .btn-opt')
+                    .forEach(btn => btn.classList.remove('disabled-btn'));
+
+                if (empStatusGroup) {
+                    const targetBtn = empStatusGroup.querySelector('.btn-opt[data-val="company_employed"]');
+                    if (targetBtn && !targetBtn.classList.contains('active')) {
+                        empStatusGroup.querySelectorAll('.btn-opt.active').forEach(b => {
+                            b.classList.remove('active');
+                            const v = b.getAttribute('data-val') || b.innerText;
+                            activeSelections.delete(v);
+                        });
+                        targetBtn.classList.add('active');
+                        const val = targetBtn.getAttribute('data-val') || targetBtn.innerText;
+                        activeSelections.add(val);
+                    }
+                }
+
+                if (empTermsGroup) {
+                    const targetBtn = empTermsGroup.querySelector('.btn-opt[data-val="company_permanent"]');
+                    if (targetBtn && !targetBtn.classList.contains('active')) {
+                        empTermsGroup.querySelectorAll('.btn-opt.active').forEach(b => {
+                            b.classList.remove('active');
+                            const v = b.getAttribute('data-val') || b.innerText;
+                            activeSelections.delete(v);
+                        });
+                        targetBtn.classList.add('active');
+                        const val = targetBtn.getAttribute('data-val') || targetBtn.innerText;
+                        activeSelections.add(val);
+                    }
+                }
+
+                updateStats();
+            }
+            document.getElementById('validationSummary').classList.remove('show');
+        }
+
+        // ---- FULL NAME SYNC ----
+        const fullNameInput = document.getElementById('my_full_name');
+        const fullNameFields = ['my_full_name_1', 'my_full_name_2'];
+        fullNameInput.addEventListener('input', function() {
+            const value = this.value;
+            fullNameFields.forEach(fieldId => { const f = document.getElementById(fieldId); if (f) f.value = value; });
+            const cntSpan = document.getElementById('fullNameCounter');
+            cntSpan.innerText = value.length + '/60';
+            cntSpan.style.background = value.length >= 55 ? '#ffbc00' : '#f1f5f9';
+            document.getElementById('validationSummary').classList.remove('show');
+            generateNameOnCard();
+        });
+
+        // ---- IC → DOB ----
+        const icInput = document.getElementById('my_ic');
+        const dobInput = document.getElementById('my_birthday_1');
+        const icTargets = ['my_passport_id_2', 'my_id_1'];
+
+        function parseICtoDOB(ic) {
+            const trimmed = ic.trim();
+            if (trimmed.length < 6) return null;
+            const parts = trimmed.split('-');
+            if (parts.length < 1) return null;
+            let yymmdd = parts[0];
+            if (yymmdd.length < 6) return null;
+            const yy = parseInt(yymmdd.substring(0, 2), 10);
+            const mm = parseInt(yymmdd.substring(2, 4), 10);
+            const dd = parseInt(yymmdd.substring(4, 6), 10);
+            if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return null;
+            if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return null;
+            const century = (yy >= 0 && yy <= 24) ? 2000 : 1900;
+            const fullYear = century + yy;
+            return `${String(dd).padStart(2, '0')}-${String(mm).padStart(2, '0')}-${fullYear}`;
+        }
+
+        icInput.addEventListener('input', function() {
+            const val = this.value;
+            icTargets.forEach(id => { const f = document.getElementById(id); if (f) f.value = val; });
+            const dob = parseICtoDOB(val);
+            if (dob) {
+                dobInput.value = dob;
+            }
+            document.getElementById('validationSummary').classList.remove('show');
+        });
+
+        // ---- PASSPORT SYNC + 清空 IC (my_id_1) ----
+        const passportInput = document.getElementById('my_passport_input');
+        passportInput.addEventListener('input', function() {
+            const ppField = document.getElementById('my_passport');
+            if (ppField) ppField.value = this.value;
+            // 当 passport 有内容时，清空 my_id_1 (IC 隐藏字段) 和 my_ic 输入框
+            if (this.value.trim().length > 0) {
+                document.getElementById('my_id_1').value = '';
+                // 同时清空 IC 输入框，让用户知道 IC 已被替代
+                document.getElementById('my_ic').value = '';
+                // 清空 DOB (因为 IC 被清空)
+                document.getElementById('my_birthday_1').value = '';
+                document.getElementById('icOptionalBadge').style.display = 'inline';
+            } else {
+                // 如果 passport 被清空，恢复 IC 可选状态 (但不恢复 IC 值)
+                document.getElementById('icOptionalBadge').style.display = 'inline';
+            }
+            document.getElementById('validationSummary').classList.remove('show');
+        });
+
+        // ---- CITY → STATE (支持 KLANG → SELANGOR) ----
+        function setupCityState(cityId, stateId) {
+            const cityEl = document.getElementById(cityId);
+            const stateEl = document.getElementById(stateId);
+            cityEl.addEventListener('input', function() {
+                const val = this.value.trim().toUpperCase();
+                if (val === 'KL' || val === 'KUALA LUMPUR') {
+                    stateEl.value = 'WP KL';
+                } else if (val === 'KLANG') {
+                    stateEl.value = 'SELANGOR';
+                } else {
+                    if (stateEl.value === 'WP KL' || stateEl.value === 'SELANGOR') {
+                        stateEl.value = '';
+                    }
+                }
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+        }
+        setupCityState('my_city', 'my_state');
+        setupCityState('company_city', 'company_state');
+
+        // ---- POSTCODE → CITY AUTO-FILL (starts with "5" → city = "KL") ----
+        function setupPostcodeToCity(postcodeId, cityId) {
+            const postcodeEl = document.getElementById(postcodeId);
+            const cityEl = document.getElementById(cityId);
+            postcodeEl.addEventListener('input', function() {
+                const val = this.value.trim();
+                if (val.length > 0 && val.startsWith('5')) {
+                    cityEl.value = 'KL';
+                    cityEl.dispatchEvent(new Event('input'));
+                }
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+        }
+        setupPostcodeToCity('my_poscode', 'my_city');
+        setupPostcodeToCity('company_poscode', 'company_city');
+
+        // ---- 手机号只允许数字、+、-（输入时允许这些字符） ----
+        function enforcePhoneFormat(el) {
+            el.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9+\-]/g, '');
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+        }
+        enforcePhoneFormat(document.getElementById('my_phone_no'));
+        enforcePhoneFormat(document.getElementById('company_contact_no'));
+
+        // ---- 邮编只允许数字 ----
+        function enforceDigitsOnly(el) {
+            el.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+        }
+        enforceDigitsOnly(document.getElementById('my_poscode'));
+        enforceDigitsOnly(document.getElementById('company_poscode'));
+
+        // ---- NOB SHRINK (live preview: 11px when >12) ----
+        const nobInput = document.getElementById('company_nob');
+        nobInput.addEventListener('input', function() {
+            if (this.value.length > 12) {
+                this.classList.add('nob-shrink');
+            } else {
+                this.classList.remove('nob-shrink');
+            }
+            document.getElementById('validationSummary').classList.remove('show');
+        });
+
+        // ---- NAME ON CARD (支持 ANAK 过滤 + 3字段全显示) ----
+        function generateNameOnCard() {
+            const fullName = document.getElementById('my_full_name').value.trim();
+            if (!fullName) {
+                document.getElementById('my_name').value = '';
+                return;
+            }
+            // 关键字：bin, binti, a/l, a/p, @, ANAK (不区分大小写)
+            const keywords = ['bin', 'binti', 'a/l', 'a/p', '@', 'anak'];
+            let cleaned = fullName;
+            const lower = cleaned.toLowerCase();
+            let minIdx = Infinity;
+            for (const kw of keywords) {
+                const idx = lower.indexOf(kw);
+                if (idx !== -1 && idx < minIdx) minIdx = idx;
+            }
+            if (minIdx !== Infinity) {
+                cleaned = cleaned.substring(0, minIdx).trim();
+            }
+            let words = cleaned.split(/\s+/).filter(w => w.length > 0);
+            if (words.length === 0) {
+                document.getElementById('my_name').value = '';
+                return;
+            }
+
+            let result = '';
+            // 如果正好3个字段且总长度 <= 19，全部使用
+            if (words.length === 3) {
+                const totalLen = words.join(' ').length;
+                if (totalLen <= 19) {
+                    result = words.join(' ');
+                } else {
+                    // 超过19字，截断
+                    let truncated = '';
+                    for (const word of words) {
+                        const next = truncated ? truncated + ' ' + word : word;
+                        if (next.length <= 19) {
+                            truncated = next;
+                        } else {
+                            break;
+                        }
+                    }
+                    result = truncated;
+                }
+            } else {
+                // 其他情况：取前2个
+                let firstTwo = words.slice(0, 2).join(' ');
+                if (firstTwo.length <= 19) {
+                    result = firstTwo;
+                } else {
+                    // 超过19字，截断
+                    let truncated = '';
+                    for (const word of words.slice(0, 2)) {
+                        const next = truncated ? truncated + ' ' + word : word;
+                        if (next.length <= 19) {
+                            truncated = next;
+                        } else {
+                            break;
+                        }
+                    }
+                    result = truncated;
+                }
+            }
+
+            // 清理特殊字符，只保留字母和空格
+            result = result.replace(/[^a-zA-Z\s]/g, '');
+            // 首字母大写
+            result = result.split(' ').map(w => {
+                if (w.length === 0) return w;
+                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+            }).join(' ');
+            result = result.trim();
+
+            const nameOnCardEl = document.getElementById('my_name');
+            nameOnCardEl.value = result;
+            document.getElementById('nameOnCardHint').innerText = `AUTO‑GENERATED (${result.length}/19)`;
+            if (result.length > 19) {
+                nameOnCardEl.value = result.substring(0, 19);
+            }
+        }
+        fullNameInput.addEventListener('input', generateNameOnCard);
+        setTimeout(generateNameOnCard, 100);
+
+        // ---- RACE 快捷按钮 ----
+        const raceButtons = document.querySelectorAll('.race-btn');
+        const raceInput = document.getElementById('my_race');
+        raceButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const val = this.getAttribute('data-val');
+                if (val === 'OTHERS') {
+                    raceInput.value = '';
+                    raceInput.focus();
+                    // 清除其他按钮的 active 状态
+                    raceButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                } else {
+                    raceInput.value = val;
+                    raceButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+                document.getElementById('validationSummary').classList.remove('show');
+            });
+        });
+        // 如果 raceInput 有值，高亮对应按钮
+        raceInput.addEventListener('input', function() {
+            const val = this.value.trim().toUpperCase();
+            raceButtons.forEach(b => {
+                const bVal = b.getAttribute('data-val');
+                if (bVal !== 'OTHERS' && bVal === val) {
+                    b.classList.add('active');
+                } else if (bVal !== 'OTHERS') {
+                    b.classList.remove('active');
+                } else if (bVal === 'OTHERS' && val.length > 0 && !['MELAYU', 'CHINESE', 'INDIA', 'IBAN',
+                        'KADAZAN'
+                    ].includes(val)) {
+                    b.classList.add('active');
+                } else if (bVal === 'OTHERS') {
+                    b.classList.remove('active');
+                }
+            });
+            document.getElementById('validationSummary').classList.remove('show');
+        });
+
+        // ---- CARD HIERARCHY ----
+        const cardGroups = [
+            { id: 'card_2cards_premier_MU', name: 'MAYBANK 2 CARDS PREMIER / MU', children: [] },
+            { id: 'card_MU_visa_infinite', name: 'MU VISA INFINITE', children: [] },
+            { id: 'card_visa_infinite', name: 'VISA INFINITE', children: [] },
+            { id: 'card_world_elite', name: 'WORLD ELITE MASTERCARD', children: [] },
+            { id: 'card_singapore_airline', name: '✈️ SINGAPORE AIRLINES KRISFLYER', children: ['card_singapore_airline_platinium',
+                    'card_singapore_airline_gold'
+                ] },
+            { id: 'card_visa_signature', name: 'VISA SIGNATURE', children: [] },
+            { id: 'card_barcelona', name: '⚽ FC BARCELONA VISA SIGNATURE', children: [] },
+            { id: 'card_myimpactvisa', name: 'MAYBANK MYIMPACT VISA', children: [] },
+            { id: 'card_2platinium', name: 'MAYBANK 2 PLATINUM', children: ['card_2platinium_master',
+                    'card_2platinium_visa'
+                ] },
+            { id: 'card_petronas_visa_platinium', name: 'PETRONAS VISA PLATINUM', children: [] },
+            { id: 'card_petronas_visa_gold', name: 'PETRONAS VISA GOLD', children: [] },
+            { id: 'card_shopee', name: 'SHOPEE VISA PLATINUM', children: [] },
+            { id: 'card_2gold', name: 'MAYBANK 2 GOLD CARDS', children: ['card_2gold_master', 'card_2gold_visa'] },
+            { id: 'card_MU_visa_gold', name: 'MANCHESTER UNITED VISA GOLD', children: [] }
+        ];
+        const childNames = {
+            card_singapore_airline_platinium: '✈️ SINGAPORE AIRLINES PLATINUM',
+            card_singapore_airline_gold: '✈️ SINGAPORE AIRLINES GOLD',
+            card_2platinium_master: '2 PLATINUM MASTERCARD',
+            card_2platinium_visa: '2 PLATINUM VISA',
+            card_2gold_master: '2 GOLD MASTERCARD',
+            card_2gold_visa: '2 GOLD VISA'
+        };
+
+        function renderCardHierarchy() {
+            const container = document.getElementById('cardHierarchyContainer');
+            container.innerHTML = '';
+            cardGroups.forEach(group => {
+                const mainDiv = document.createElement('div');
+                mainDiv.className = 'card-main-item';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = group.id;
+                const span = document.createElement('span');
+                span.textContent = group.name;
+                mainDiv.appendChild(cb);
+                mainDiv.appendChild(span);
+                const updateMain = (checked) => {
+                    if (checked) { activeSelections.add(group.id);
+                        mainDiv.classList.add('active'); } else { activeSelections.delete(group.id);
+                        mainDiv.classList.remove('active'); }
+                    updateStats();
+                    document.getElementById('validationSummary').classList.remove('show');
+                };
+                mainDiv.onclick = (e) => { if (e.target !== cb) { cb.checked = !cb.checked;
+                        updateMain(cb.checked); } };
+                cb.onclick = (e) => { e.stopPropagation();
+                    updateMain(cb.checked); };
+                container.appendChild(mainDiv);
+                if (group.children.length) {
+                    const subDiv = document.createElement('div');
+                    subDiv.className = 'sub-card-group';
+                    group.children.forEach(childId => {
+                        const childDiv = document.createElement('div');
+                        childDiv.className = 'sub-card';
+                        const childCb = document.createElement('input');
+                        childCb.type = 'checkbox';
+                        childCb.value = childId;
+                        const childSpan = document.createElement('span');
+                        childSpan.textContent = childNames[childId] || childId;
+                        childDiv.appendChild(childCb);
+                        childDiv.appendChild(childSpan);
+                        const updateChild = (checked) => {
+                            if (checked) { activeSelections.add(childId);
+                                childDiv.classList.add('active'); } else { activeSelections.delete(childId);
+                                childDiv.classList.remove('active'); }
+                            updateStats();
+                            document.getElementById('validationSummary').classList.remove('show');
+                        };
+                        childDiv.onclick = (e) => { if (e.target !== childCb) { childCb.checked = !childCb
+                                .checked;
+                                updateChild(childCb.checked); } };
+                        childCb.onclick = (e) => { e.stopPropagation();
+                            updateChild(childCb.checked); };
+                        subDiv.appendChild(childDiv);
+                    });
+                    container.appendChild(subDiv);
+                }
+            });
+        }
+
+        // ---- SIGNATURE CANVAS (透明背景) ----
+        const canvas = document.getElementById('sigCanvas');
+        let ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        function initCanvas() {
+            const container = canvas.parentElement;
+            const width = container.clientWidth - 4;
+            canvas.width = width;
+            canvas.height = 150;
+            canvas.style.width = '100%';
+            canvas.style.height = '150px';
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#000000';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function getCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) { clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY; } else { clientX = e.clientX;
+                clientY = e.clientY; }
+            let x = (clientX - rect.left) * scaleX;
+            let y = (clientY - rect.top) * scaleY;
+            x = Math.min(Math.max(0, x), canvas.width);
+            y = Math.min(Math.max(0, y), canvas.height);
+            return [x, y];
+        }
+
+        function startDraw(e) { drawing = true; const [x, y] = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            e.preventDefault(); }
+
+        function draw(e) { if (!drawing) return; const [x, y] = getCoords(e);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            e.preventDefault(); }
+
+        function endDraw() { drawing = false; }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000000';
+        }
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mouseleave', endDraw);
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', endDraw);
+        document.getElementById('clearSigBtn').addEventListener('click', clearSignature);
+        window.addEventListener('resize', () => { initCanvas(); });
+
+        // ---- FONT UPLOAD ----
+        document.getElementById('fontUpload').addEventListener('change', async (e) => {
+            if (e.target.files[0]) { customFontBytes = await e.target.files[0].arrayBuffer();
+                isCustomFontLoaded = true;
+                document.getElementById('fontPreviewText').innerHTML = `✅ LOADED: ${e.target.files[0].name}`; } else {
+                customFontBytes = null;
+                isCustomFontLoaded = false;
+                document.getElementById('fontPreviewText').innerHTML = '⚡ SYSTEM: HELVETICA (STANDARD)'; }
+        });
+
+        // ---- EMAIL COUNTER ----
+        const emailInput = document.getElementById('my_email_1');
+        const emailHint = document.getElementById('emailHint');
+        emailInput.addEventListener('input', () => {
+            let len = emailInput.value.length;
+            emailHint.innerText = len + '/30';
+            emailHint.className = len >= 30 ? 'char-hint warning' : 'char-hint';
+        });
+
+        // ============================================================
+        //  PDF GENERATION with all dynamic adjustments
+        // ============================================================
+        async function generatePDF() {
+            checkIncome();
+            const incomeErrorEl = document.getElementById('incomeError');
+            if (incomeErrorEl.classList.contains('show')) {
+                alert('❌ PLEASE FIX THE INCOME CALCULATION ERROR BEFORE GENERATING PDF.');
+                incomeErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const missing = validateAllFields();
+            if (!showValidationErrors(missing)) return;
+
+            const file = document.getElementById('pdfUpload').files[0];
+            if (!file) return;
+
+            const loading = document.createElement('div');
+            loading.innerText = '⏳ GENERATING PDF...';
+            loading.style.cssText =
+                'position:fixed;top:50%;left:50%;background:#1e2a3a;color:#FFBC00;padding:16px 28px;border-radius:60px;z-index:9999;font-weight:bold';
+            document.body.appendChild(loading);
+
+            try {
+                const pdfBytes = await file.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                pdfDoc.registerFontkit(window.fontkit);
+                let font = customFontBytes ? await pdfDoc.embedFont(customFontBytes) : await pdfDoc.embedFont(PDFLib
+                    .StandardFonts.HelveticaBold);
+
+                const form = pdfDoc.getForm();
+                for (let id of activeSelections) {
+                    try { let cb = form.getCheckBox(id); if (cb) cb.check(); } catch (e) {}
+                }
+
+                const get = (id) => document.getElementById(id)?.value || '';
+                const toUpper = (s) => (s || '').toUpperCase();
+
+                // ---- 分离 IC 和护照值 ----
+                const icVal = document.getElementById('my_ic').value.trim();
+                const passportVal = passportInput.value.trim();
+                // 第一面和第四面的 my_passport_id_2 显示 IC 优先，若 IC 为空则显示护照
+                const idForFirstAndFourth = icVal || passportVal;
+
+                const fullNameVal = toUpper(fullNameInput.value);
+                const len = fullNameVal.length;
+
+                let p1_x = 313,
+                    p1_size = 15.5;
+                if (len > 30) { p1_x = 313 - 80;
+                    p1_size = 10; } else if (len > 25) { p1_x = 313 - 40;
+                    p1_size = 12; }
+
+                let p3_size = 15.5;
+                if (len > 30) { p3_size = 12; }
+
+                let p4_x = 264,
+                    p4_size = 15.5;
+                if (len > 30) { p4_x = 264 - 80;
+                    p4_size = 9.5; } else if (len > 25) { p4_x = 264 - 40;
+                    p4_size = 10.5; }
+
+                let p6_size = 15.5;
+                if (len > 12) { p6_size = 10; }
+
+                let p8_x = 365,
+                    p8_y = 306,
+                    p8_size = 15.5;
+                if (len > 30) { p8_x = 365 - 120;
+                    p8_size = 9;
+                    p8_y = 306; } else if (len > 25) { p8_x = 365 - 75;
+                    p8_size = 10.5;
+                    p8_y = 306; }
+
+                const nobVal = get('company_nob');
+                let nobSize = 12;
+                if (nobVal.length > 18) nobSize = 9.5;
+
+                const textMap = {
+                    my_full_name: fullNameVal,
+                    my_full_name_1: fullNameVal,
+                    my_full_name_2: fullNameVal,
+                    // 第3页的 IC 字段：只显示 IC，若 IC 为空则留空
+                    my_id_1: toUpper(icVal),
+                    // 第1面与第4面的 my_passport_id_2 同步显示 IC 优先（IC为空则显示护照）
+                    my_passport_id_2: toUpper(idForFirstAndFourth),
+                    my_passport: toUpper(passportVal),
+                    my_location: toUpper(get('my_location')),
+                    others_doc_name: toUpper(get('others_doc_name')),
+                    apply_date: toUpper(get('apply_date')),
+                    remark_1: toUpper(get('remark_1')),
+                    remark_2: toUpper(get('remark_2')),
+                    my_name: toUpper(get('my_name')),
+                    my_race: toUpper(get('my_race')),
+                    my_address_1: toUpper(get('my_address_1')),
+                    my_address_2: toUpper(get('my_address_2')),
+                    my_poscode: toUpper(get('my_poscode')),
+                    my_city: toUpper(get('my_city')),
+                    my_state: toUpper(get('my_state')),
+                    my_phone_no: get('my_phone_no'),
+                    my_email_1: toUpper(get('my_email_1')),
+                    company_name: toUpper(get('company_name')),
+                    company_address1: toUpper(get('company_address1')),
+                    company_address2: toUpper(get('company_address2')),
+                    company_poscode: toUpper(get('company_poscode')),
+                    company_city: toUpper(get('company_city')),
+                    company_state: toUpper(get('company_state')),
+                    company_contact_no: get('company_contact_no'),
+                    company_nob: toUpper(nobVal),
+                    company_position: toUpper(get('company_position')),
+                    company_year: toUpper(get('company_year')),
+                    my_birthday_1: toUpper(get('my_birthday_1')),
+                    income_gross: get('income_gross'),
+                    income_nett: get('income_nett'),
+                    my_country: toUpper(get('my_country')),
+                    country_tin: toUpper(get('country_tin')),
+                    number_tin: toUpper(get('number_tin'))
+                };
+
+                const coords = [
+                    { page: 1, id: 'my_full_name', x: p1_x, y: 703, underline: false, size: p1_size },
+                    { page: 1, id: 'my_passport_id_2', x: 313, y: 681, underline: false, size: 15.5 },
+                    { page: 1, id: 'my_location', x: 312, y: 655, underline: false, size: 15.5 },
+                    { page: 1, id: 'others_doc_name', x: 194, y: 409, underline: false, size: 15.5 },
+                    { page: 1, id: 'apply_date', x: 313, y: 192, underline: false, size: 15.5 },
+                    { page: 1, id: 'remark_1', x: 60, y: 114, underline: false, size: 15.5 },
+                    { page: 1, id: 'remark_2', x: 60, y: 86, underline: false, size: 15.5 },
+
+                    { page: 3, id: 'my_name', x: 29, y: 372, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_id_1', x: 28, y: 310, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_passport', x: 245, y: 311, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_race', x: 323, y: 295, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_address_1', x: 162, y: 279, underline: true, size: 12 },
+                    { page: 3, id: 'my_address_2', x: 29, y: 263, underline: true, size: 12 },
+                    { page: 3, id: 'my_poscode', x: 497, y: 263, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_city', x: 82, y: 247, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_state', x: 337, y: 247, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_phone_no', x: 377, y: 231, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_email_1', x: 162, y: 215, underline: true, size: 17 },
+                    { page: 3, id: 'company_name', x: 203, y: 118, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_address1', x: 135, y: 102, underline: true, size: 12 },
+                    { page: 3, id: 'company_address2', x: 28, y: 86, underline: true, size: 12 },
+                    { page: 3, id: 'company_poscode', x: 498, y: 86, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_city', x: 81, y: 70, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_state', x: 337, y: 70, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_contact_no', x: 122, y: 54, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_nob', x: 390, y: 54, underline: false, size: nobSize },
+                    { page: 3, id: 'company_position', x: 109, y: 38, underline: false, size: 15.5 },
+                    { page: 3, id: 'company_year', x: 179, y: 22, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_birthday_1', x: 120, y: 295, underline: false, size: 15.5 },
+                    { page: 3, id: 'my_full_name_1', x: 28, y: 343, underline: false, size: p3_size },
+
+                    { page: 4, id: 'income_gross', x: 189, y: 721, underline: false, size: 15.5 },
+                    { page: 4, id: 'income_nett', x: 189, y: 669, underline: false, size: 15.5 },
+                    { page: 4, id: 'my_email_1', x: 349, y: 512, underline: true, size: 12 },
+                    { page: 4, id: 'my_full_name', x: p4_x, y: 202, underline: false, size: p4_size },
+                    { page: 4, id: 'my_birthday_1', x: 264, y: 185, underline: false, size: 15.5 },
+                    { page: 4, id: 'my_country', x: 264, y: 168, underline: false, size: 15.5 },
+                    { page: 4, id: 'my_passport_id_2', x: 264, y: 151, underline: false, size: 15.5 },
+
+                    { page: 5, id: 'country_tin', x: 49, y: 421, underline: false, size: 15.5 },
+                    { page: 5, id: 'number_tin', x: 285, y: 421, underline: false, size: 15.5 },
+
+                    { page: 6, id: 'my_full_name_2', x: 181, y: 780, underline: false, size: p6_size },
+                    { page: 6, id: 'apply_date', x: 182, y: 764, underline: false, size: 15.5 },
+
+                    { page: 8, id: 'my_full_name_2', x: p8_x, y: p8_y, underline: false, size: p8_size },
+                    { page: 8, id: 'apply_date', x: 365, y: 287, underline: false, size: 15.5 },
+
+                    { page: 11, id: 'apply_date', x: 213, y: 67, underline: false, size: 15.5 },
+                    { page: 12, id: 'apply_date', x: 212, y: 70, underline: false, size: 15.5 }
+                ];
+
+                const pages = pdfDoc.getPages();
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    for (let c of coords) {
+                        if (c.page !== i + 1) continue;
+                        let val = textMap[c.id];
+                        if (!val) continue;
+                        if (c.underline) {
+                            if (isCustomFontLoaded && customFontBytes) {
+                                page.drawText(val, { x: c.x, y: c.y, font, size: c.size, color: PDFLib.rgb(0, 0,
+                                    0) });
+                                page.drawText(val, { x: c.x + 0.12, y: c.y - 0.08, font, size: c.size,
+                                    color: PDFLib.rgb(0, 0, 0) });
+                            } else {
+                                page.drawText(val, { x: c.x, y: c.y, font, size: c.size, color: PDFLib.rgb(0,
+                                    0, 0) });
+                            }
+                            const matches = [...val.matchAll(/\d+/g)];
+                            for (let m of matches) {
+                                const before = val.substring(0, m.index);
+                                const startX = c.x + font.widthOfTextAtSize(before, c.size);
+                                const endX = startX + font.widthOfTextAtSize(m[0], c.size);
+                                if (endX - startX > 0) {
+                                    let steps = Math.max(10, Math.floor((endX - startX) / 6));
+                                    let step = (endX - startX) / steps;
+                                    let curX = startX,
+                                        curY = c.y - 2.2;
+                                    for (let s = 0; s <= steps; s++) {
+                                        let t = s / steps;
+                                        let waveY = Math.sin(t * Math.PI * 2.4) * 0.7 + (Math.random() - 0.5) *
+                                        0.5;
+                                        let targetY = c.y - 2.2 + waveY;
+                                        if (s > 0) page.drawLine({ start: { x: curX, y: curY }, end: { x: startX +
+                                                    s * step, y: targetY }, thickness: 0.6,
+                                            color: PDFLib.rgb(0, 0, 0), opacity: 0.95 });
+                                        curX = startX + s * step;
+                                        curY = targetY;
+                                    }
+                                }
+                            }
+                        } else {
+                            if (isCustomFontLoaded && customFontBytes) {
+                                page.drawText(val, { x: c.x, y: c.y, font, size: c.size, color: PDFLib.rgb(0, 0,
+                                    0) });
+                                page.drawText(val, { x: c.x + 0.12, y: c.y - 0.08, font, size: c.size,
+                                    color: PDFLib.rgb(0, 0, 0) });
+                            } else {
+                                page.drawText(val, { x: c.x, y: c.y, font, size: c.size, color: PDFLib.rgb(0,
+                                    0, 0) });
+                            }
+                        }
+                    }
+                }
+
+                // ---- 透明签名 ----
+                const sigData = canvas.toDataURL('image/png');
+                const emptySig =
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+                if (sigData !== emptySig) {
+                    const sigImg = await pdfDoc.embedPng(sigData);
+                    if (pages[5]) pages[5].drawImage(sigImg, { x: 200, y: 794, width: 85, height: 38 });
+                    if (pages[7]) pages[7].drawImage(sigImg, { x: 50, y: 298, width: 85, height: 38 });
+                }
+
+                const finalBytes = await pdfDoc.save();
+                const blob = new Blob([finalBytes], { type: 'application/pdf' });
+
+                // ---- PDF 文件名: my_full_name + "_" + apply_date ----
+                const namePart = fullNameVal.replace(/\s+/g, '_');
+                const datePart = document.getElementById('apply_date').value.trim().replace(/\//g, '');
+                const fileName = `${namePart}_${datePart}.pdf`;
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+                alert('✅ PDF GENERATED! 签名透明 (第6页 & 第8页) · 所有文字大写。');
+
+            } catch (err) {
+                console.error(err);
+                alert('ERROR: ' + err.message);
+            } finally {
+                document.body.removeChild(loading);
+            }
+        }
+
+        // ---- INIT ----
+        window.onload = () => {
+            initCanvas();
+            initToggleGroups();
+            renderCardHierarchy();
+            initAllSplitters();
+
+            document.getElementById('generateBtn').onclick = generatePDF;
+
+            document.getElementById('remarkInput1').dispatchEvent(new Event('input'));
+            generateNameOnCard();
+
+            document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', () =>
+                document.getElementById('validationSummary').classList.remove('show')));
+
+            document.querySelectorAll('#income_gross, #income_nett').forEach(el => el.addEventListener('input', () => {
+                document.getElementById('incomeError').classList.remove('show');
+            }));
+
+            setTimeout(checkIncome, 200);
+            setTimeout(applySoleProRules, 100);
+
+            ['my_poscode', 'company_poscode'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim().startsWith('5')) {
+                    const cityId = id === 'my_poscode' ? 'my_city' : 'company_city';
+                    document.getElementById(cityId).value = 'KL';
+                    document.getElementById(cityId).dispatchEvent(new Event('input'));
+                }
+            });
+
+            document.getElementById('icOptionalBadge').style.display = 'inline';
+        };
+    </script>
+</body>
+</html>
